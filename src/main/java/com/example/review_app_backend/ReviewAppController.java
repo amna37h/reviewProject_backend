@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,17 +34,17 @@ public class ReviewAppController {
         int rating = requestData.path("rating").asInt();
         System.out.println(rating);
 
-        int id = 4;
+        int book_id = requestData.path("bookId").asInt();
 
         String sql = "INSERT INTO `sys`.`eibfs_bookreview_reviews` (`book_id`, `username`, `user_review`, `review_rate`) VALUES (?, ?, ?, ?)";
-        jdbc.update(sql, id, username, content, rating);
+        jdbc.update(sql, book_id, username, content, rating);
 
         return requestData.toString();
     }
 
     @RequestMapping(path = "/reviews", method = RequestMethod.GET)
-    public List<Review> getAllReviews() throws IOException {
-        String sql = "SELECT * FROM eibfs_bookreview_reviews";
+    public List<Review> getAllReviews(@RequestParam String itemId) throws IOException {
+        String sql = "SELECT * FROM eibfs_bookreview_reviews WHERE book_id = " + itemId + "";
 
         List<Review> items = jdbc.query(sql, new ReviewMapper());
         return items;
